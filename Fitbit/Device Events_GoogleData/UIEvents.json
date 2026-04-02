@@ -1,0 +1,74 @@
+[
+  {
+    "event": {
+      "autoWake": {
+        "stateChanged": {
+          "state": "ON"
+        }
+      }
+    },
+    "timestamp": "2026-03-19T18:24:34.288Z"
+  },
+  {
+    "event": {
+      "autoWake": {
+        "stateChanged": {
+          "state": "ON"
+        }
+      }
+    },
+    "timestamp": "2026-03-19T18:24:40.527Z"
+  },
+  {
+    "event": {
+      "autoWake": {
+        "stateChanged": {
+          "state": "ON"
+        }
+      }
+    },
+    "timestamp": "2026-03-19T18:25:27.653Z"
+  },
+  {
+    "event": {
+      "autoWake": {
+        "stateChanged": {
+          "state": "OFF"
+        }
+      }
+    },
+    "timestamp": "2026-03-31T17:40:26.649Z"
+  },
+  {
+    "event": {
+      "arSettings": {
+        "arSetting": [ {
+          "exerciseType": "WALK",
+          "isAutoStartOn": true,
+          "isGpsEnabled": false
+        }, {
+          "exerciseType": "RUN",
+          "isAutoStartOn": true,
+          "isGpsEnabled": true
+        }, {
+          "exerciseType": "CYCLE",
+          "isAutoStartOn": true,
+          "isGpsEnabled": true
+        }, {
+          "exerciseType": "ROW",
+          "isAutoStartOn": true,
+          "isGpsEnabled": false
+        }, {
+          "exerciseType": "ELLIPTICAL",
+          "isAutoStartOn": true,
+          "isGpsEnabled": false
+        }, {
+          "exerciseType": "SPINNING",
+          "isAutoStartOn": true,
+          "isGpsEnabled": false
+        } ]
+      }
+    },
+    "timestamp": "2026-03-31T17:40:26.918Z"
+  }
+]

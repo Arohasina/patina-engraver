@@ -1,0 +1,12 @@
+user_id,tracker_id,mobile_app_name,is_app_enabled,show_partial_message,is_default_message_app,created_on,modified_on
+206172082,3060312333,com.linkedin.LinkedIn,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.microsoft.Office.Outlook,false,false,false,2026-03-31T17:15:42.000Z,2026-03-31T17:15:42.000Z
+206172082,3060312333,com.facebook.Messenger,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.amazon.Amazon,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,net.whatsapp.WhatsApp,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.burbn.instagram,false,false,false,2026-03-31T17:38:10.000Z,2026-03-31T17:38:10.000Z
+206172082,3060312333,com.google.calendar,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,macys.ishop,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.microsoft.skype.teams,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.taptapsend.TaptapSend,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
+206172082,3060312333,com.tyndale.filament,false,false,false,2026-03-31T18:16:10.000Z,2026-03-31T18:16:10.000Z
