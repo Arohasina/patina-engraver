@@ -7,7 +7,7 @@ Loads steps data from a manually downloaded Fitbit export and converts it into l
 Download your Fitbit data export and place the CSV files in:
 
 ```
-Fitbit/Physical Activity_GoogleData/steps_*.csv
+Fitbit
 ```
 
 ## 2) Load and view steps data
