@@ -2,35 +2,63 @@
 
 Loads steps data from a manually downloaded Fitbit export and converts it into lines to engrave with an AxiDraw V3.
 
-## 1) Add your Fitbit data
+## Requirements
 
-Download your Fitbit data export and place the CSV files in:
+- Python 3
 
+## Setup
+
+### 1. Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
-Fitbit/Physical Activity_GoogleData/steps_*.csv
+
+Your prompt should show `(.venv)` when active.
+
+### 2. Install AxiDraw (only needed for drawing)
+
+```bash
+python -m pip install https://cdn.evilmadscientist.com/dl/ad/public/AxiDraw_API.zip
 ```
 
-## 2) Load and view steps data
+Check it installed:
+
+```bash
+pip show pyaxidraw
+or pip show axicli
+```
+
+---
+
+## Usage
+
+### Load and view your steps data
 
 ```bash
 python scripts/load_steps.py
 ```
 
-## 3) Connect and draw with AxiDraw V3
+### Draw a triangle on the AxiDraw - to test AxiDraw V3 connection
 
-*(coming soon)*
+1. Plug in and power on the AxiDraw V3
+2. Put a pen in the holder and place paper on the bed
+3. Run:
 
-## Project structure
+```bash
+python scripts/draw_triangle.py
+```
 
-```text
-.
-|-- Fitbit/
-|   `-- Physical Activity_GoogleData/
-|       `-- steps_*.csv
-|-- scripts/
-|   `-- load_steps.py
-`-- src/
-    `-- patina_engraver/
-        `-- axidraw_service.py
+---
+
+## Adding your Fitbit data
+
+1. Download your data export from your Fitbit/Google account
+2. Find the `steps_YYYY-MM-DD.csv` files
+3. Place them in:
+
+```
+Fitbit/Physical Activity_GoogleData/
 ```
 
