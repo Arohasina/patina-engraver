@@ -1,0 +1,2 @@
+tracker_id,enabled_notification_types,on_right_hand,clock_face,enable_inactivity_alerts,last_updated_ia_time,last_reboot_time,payments_enabled,last_successful_wifi_connection_time,last_successful_wifi_connectionipv4addr,last_successful_wifi_connectionipv6addr,last_successful_wifi_connectionssid,live_data_disabled
+3072333323,"[CALENDAR, TEXT_MESSAGE, APP_NOTIFICATIONS, INCOMING_CALL]",false,,true,2026-04-07T19:02:02.000Z,,false,,,,,false
