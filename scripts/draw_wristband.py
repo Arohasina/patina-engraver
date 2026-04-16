@@ -32,7 +32,8 @@ Z1_X0, Z1_X1 = BAND_W * 0.20,  BAND_W * 0.60   # Steps/Active (40 %)
 Z3_X0, Z3_X1 = BAND_W * 0.60,  BAND_W * 0.80   # Time in Bed  (20 %)
 Z4_X0, Z4_X1 = BAND_W * 0.80,  BAND_W           # Distance     (20 %)
 
-DOT_SPACING = 0.5   # mm between consecutive dots along a segment
+DOT_SPACING      = 0.5   # mm between dots in Zone 1 (zigzag)
+DOT_SPACING_LINE = 2.0   # mm between dots in Zones 2 & 3 (stipple lines)
 
 FITBIT_DIR   = Path(__file__).parent.parent / "Fitbit"
 ACTIVITY_DIR = FITBIT_DIR / "Physical Activity_GoogleData"
@@ -170,7 +171,7 @@ def draw_zone2(ad, calories_per_day):
         if cal <= 0:
             continue
         x = Z2_X0 + (i + 0.5) * zone_w / 7
-        line_dots(ad, x, Y_TOP, x, Y_TOP + (cal / max_cal) * BAND_H)
+        line_dots(ad, x, Y_TOP, x, Y_TOP + (cal / max_cal) * BAND_H, DOT_SPACING_LINE)
 
 
 #Zone 3: Time in Bed
@@ -183,7 +184,7 @@ def draw_zone3(ad, sleep_per_day):
             continue
         x        = Z3_X0 + (i + 0.5) * zone_w / 7
         line_len = ((mins - 240) / (540 - 240)) * BAND_H
-        line_dots(ad, x, Y_BOTTOM, x, Y_BOTTOM - line_len)
+        line_dots(ad, x, Y_BOTTOM, x, Y_BOTTOM - line_len, DOT_SPACING_LINE)
 
 
 #Zone 4: Total Walking Distance
