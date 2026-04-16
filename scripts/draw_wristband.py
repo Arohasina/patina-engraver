@@ -7,7 +7,7 @@ Zones (band-local x, left to right):
   Zone 3 – Time in Bed          (129–172 mm)  20 %
   Zone 4 – Total Walk Distance  (172–215 mm)  20 %
 
-Run:  python draw_wristband.py
+Run: .venv\Scripts\python.exe scripts\draw_wristband.py
 """
 import csv
 import json
@@ -21,7 +21,7 @@ from pyaxidraw import axidraw
 # Band dimensions & AxiDraw offset
 BAND_W  = 215.0   # mm — physical band width  (21.5 cm)
 BAND_H  =  34.0   # mm — physical band height ( 3.4 cm)
-MARGIN  =  20.0   # mm — distance from AxiDraw home (0,0) to band top-left corner
+MARGIN  =   2.0   # mm — distance from AxiDraw home (0,0) to band top-left corner
 
 Y_TOP    = 0.0
 Y_BOTTOM = BAND_H
@@ -142,7 +142,7 @@ def draw_line(ad, x0, y0, x1, y1):
 
 def draw_zone1(ad, avg_steps, avg_active_min):
     n_lines  = max(1, min(avg_steps // 1000, 10))  # 1000 steps = 1 stroke, cap at 10
-    stroke_w = (Z1_X1 - Z1_X0) / n_lines
+    stroke_w = (Z1_X1 - Z1_X0) / 10               # always sized for 10 strokes; unused space stays blank
     noise_sigma = (1.0 - min(1.0, avg_active_min / 120.0)) * 3.0  # mm
 
     for i in range(n_lines):
