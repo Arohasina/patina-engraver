@@ -1,11 +1,5 @@
 """
-draw_wristband.py — Engrave Patina Tracker wristband patterns from Fitbit data.
-
-Zones (band-local x, left to right):
-  Zone 2 – Activity Calories    (  0– 43 mm)  20 %
-  Zone 1 – Steps / Active Time  ( 43–129 mm)  40 %
-  Zone 3 – Time in Bed          (129–172 mm)  20 %
-  Zone 4 – Total Walk Distance  (172–215 mm)  20 %
+draw_wristband.py to Engrave Patina Tracker wristband patterns from Fitbit data.
 
 Run: .venv\Scripts\python.exe scripts\draw_wristband.py
 """
@@ -19,18 +13,36 @@ from pathlib import Path
 from pyaxidraw import axidraw
 
 # Band dimensions & AxiDraw offset
-BAND_W  = 215.0   # mm — physical band width  (21.5 cm)
-BAND_H  =  34.0   # mm — physical band height ( 3.4 cm)
-MARGIN  =   2.0   # mm — distance from AxiDraw home (0,0) to band top-left corner
+BAND_W    = 220.0  # mm — physical band width  (22 cm)
+BAND_H    =  45.0  # mm — physical band height ( 4.5 cm)
+MARGIN    =   2.0  # mm — distance from AxiDraw home (0,0) to band top-left corner
+MARGIN_Y  =   2.0  # mm — top and bottom drawing margin within the band
+CLASP_W   =  20.0  # mm — right side hidden under magnet clasp; never engraved
+TRACKER_W =  10.0  # mm — blank hole for tracker module between Z1 and Z3
+GAP_Z2_Z1 =   3.0  # mm — blank separator between Calories and Steps zones
+GAP_Z3_Z4 =   3.0  # mm — blank separator between Time in Bed and Distance zones
 
-Y_TOP    = 0.0
-Y_BOTTOM = BAND_H
+Y_TOP    = MARGIN_Y
+Y_BOTTOM = BAND_H - MARGIN_Y
+Y_BOT_Z12 = Y_BOTTOM - 2.0  # zones 1 & 2 stop 2 mm above the bottom margin boundary
 
 # Zone X boundaries (band-local mm)
-Z2_X0, Z2_X1 = 0.0,            BAND_W * 0.20   # Calories     (20 %)
-Z1_X0, Z1_X1 = BAND_W * 0.20,  BAND_W * 0.60   # Steps/Active (40 %)
-Z3_X0, Z3_X1 = BAND_W * 0.60,  BAND_W * 0.80   # Time in Bed  (20 %)
-Z4_X0, Z4_X1 = BAND_W * 0.80,  BAND_W           # Distance     (20 %)
+_DRAW  = BAND_W - CLASP_W                              # 200 mm engravable
+_FIXED = TRACKER_W + GAP_Z2_Z1 + GAP_Z3_Z4            # 16 mm total fixed gaps
+_UNIT  = (_DRAW - _FIXED) / 90                         # 1 proportional part (184 mm / 90 parts)
+
+_A = 15 * _UNIT                                        # end of Z2
+_B = _A + GAP_Z2_Z1                                    # start of Z1
+_C = _B + 40 * _UNIT                                   # end of Z1 / start of tracker hole
+_D = _C + TRACKER_W                                    # end of tracker hole / start of Z3
+_E = _D + 15 * _UNIT                                   # end of Z3
+_F = _E + GAP_Z3_Z4                                    # start of Z4
+
+Z2_X0, Z2_X1 = 0.0, _A   # Calories     (15 %)
+Z1_X0, Z1_X1 = _B,  _C   # Steps/Active (40 %)
+ZT_X0, ZT_X1 = _C,  _D   # Tracker hole (10 mm blank)
+Z3_X0, Z3_X1 = _D,  _E   # Time in Bed  (15 %)
+Z4_X0, Z4_X1 = _F,  _DRAW # Distance     (20 %)
 
 DOT_SPACING      = 0.5   # mm between dots in Zone 1 (zigzag)
 DOT_SPACING_LINE = 2.0   # mm between dots in Zones 2 & 3 (stipple lines)
@@ -43,6 +55,10 @@ GLOBAL_DIR   = FITBIT_DIR / "Global Export Data"
 #Data loading
 
 def _csv_daily_totals(pattern, col):
+    """
+    pattern: a glob pattern (e.g. "steps_*.csv") to match CSV files in ACTIVITY_DIR
+    col:the name of the column whose values you want to sum up
+    """
     totals = defaultdict(float)
     for f in sorted(ACTIVITY_DIR.glob(pattern)):
         with f.open(newline="", encoding="utf-8") as fh:
@@ -82,6 +98,10 @@ def _parse_date(dt_str):
 
 
 def load_active_minutes():
+    """"
+    reads JSON files for "very active" and "moderately active" minutes, 
+    adds both together per day, giving total active minutes per day.
+    """
     totals = defaultdict(int)
     for pattern in ("very_active_minutes-*.json", "moderately_active_minutes-*.json"):
         for f in sorted(GLOBAL_DIR.glob(pattern)):
@@ -93,6 +113,9 @@ def load_active_minutes():
 
 
 def load_sleep_minutes():
+    """"
+    reads sleep JSON files and extracts timeInBed (in minutes) per date.
+    """
     totals = defaultdict(int)
     for f in sorted(GLOBAL_DIR.glob("sleep-*.json")):
         with f.open(encoding="utf-8") as fh:
@@ -107,6 +130,10 @@ def load_sleep_minutes():
 
 
 def pick_week(steps):
+    """"
+    from all days that have step data, picks the 7 most recent days with non-zero steps. 
+    If fewer than 7 exist, it pads the front with empty strings.
+    """
     dates = sorted(d for d, s in steps.items() if s > 0)[-7:]
     while len(dates) < 7:
         dates.insert(0, "")
@@ -133,6 +160,9 @@ def line_dots(ad, x0, y0, x1, y1, spacing=DOT_SPACING):
 
 
 def draw_line(ad, x0, y0, x1, y1):
+    """
+    draws a solid line between two points
+    """
     ad.moveto(x0 + MARGIN, y0 + MARGIN)
     ad.pendown()
     ad.lineto(x1 + MARGIN, y1 + MARGIN)
@@ -144,20 +174,20 @@ def draw_line(ad, x0, y0, x1, y1):
 def draw_zone1(ad, avg_steps, avg_active_min):
     n_lines  = max(1, min(avg_steps // 1000, 10))  # 1000 steps = 1 stroke, cap at 10
     stroke_w = (Z1_X1 - Z1_X0) / 10               # always sized for 10 strokes; unused space stays blank
-    noise_sigma = (1.0 - min(1.0, avg_active_min / 120.0)) * 3.0  # mm
+    noise_sigma = (1.0 - min(1.0, avg_active_min / 120.0)) * 2.5  # mm
 
     for i in range(n_lines):
         xl, xr = Z1_X0 + i * stroke_w, Z1_X0 + (i + 1) * stroke_w
         if i % 2 == 0:
-            xa, ya, xb, yb = xl, Y_BOTTOM, xr, Y_TOP
+            xa, ya, xb, yb = xl, Y_BOT_Z12, xr, Y_TOP
         else:
-            xa, ya, xb, yb = xl, Y_TOP, xr, Y_BOTTOM
+            xa, ya, xb, yb = xl, Y_TOP, xr, Y_BOT_Z12
 
         n_dots = max(1, int(math.hypot(xb - xa, yb - ya) / DOT_SPACING))
         for j in range(n_dots + 1):
             t = j / n_dots
-            cx = max(Z1_X0, min(Z1_X1, xa + t * (xb - xa) + random.gauss(0, noise_sigma)))
-            cy = max(Y_TOP,  min(Y_BOTTOM, ya + t * (yb - ya) + random.gauss(0, noise_sigma)))
+            cx = max(Z1_X0,  min(Z1_X1,   xa + t * (xb - xa) + random.gauss(0, noise_sigma)))
+            cy = max(Y_TOP,   min(Y_BOT_Z12, ya + t * (yb - ya) + random.gauss(0, noise_sigma)))
             dot(ad, cx, cy)
 
 
@@ -171,7 +201,7 @@ def draw_zone2(ad, calories_per_day):
         if cal <= 0:
             continue
         x = Z2_X0 + (i + 0.5) * zone_w / 7
-        line_dots(ad, x, Y_TOP, x, Y_TOP + (cal / max_cal) * BAND_H, DOT_SPACING_LINE)
+        line_dots(ad, x, Y_TOP, x, Y_TOP + (cal / max_cal) * (Y_BOT_Z12 - Y_TOP), DOT_SPACING_LINE)
 
 
 #Zone 3: Time in Bed
@@ -183,7 +213,7 @@ def draw_zone3(ad, sleep_per_day):
         if not (240 <= mins <= 540):
             continue
         x        = Z3_X0 + (i + 0.5) * zone_w / 7
-        line_len = ((mins - 240) / (540 - 240)) * BAND_H
+        line_len = ((mins - 240) / (540 - 240)) * (Y_BOTTOM - Y_TOP)
         line_dots(ad, x, Y_BOTTOM, x, Y_BOTTOM - line_len, DOT_SPACING_LINE)
 
 
@@ -203,7 +233,7 @@ def draw_zone4(ad, total_km):
     level = 1 if total_km < 20 else (2 if total_km < 40 else 3)
     cx  = (Z4_X0 + Z4_X1) / 2
     cy  = (Y_TOP + Y_BOTTOM) / 2
-    arm = min(Z4_X1 - Z4_X0, BAND_H) * 0.35
+    arm = min(Z4_X1 - Z4_X0, Y_BOTTOM - Y_TOP) * 0.35
     _fractal_plus(ad, cx, cy, arm, depth=level)
 
 
@@ -243,7 +273,10 @@ def main():
 
     ad = axidraw.AxiDraw()
     ad.interactive()
-    ad.options.units = 2   # mm
+    ad.options.units         = 2    # mm
+    ad.options.speed_pendown = 20   # % — drawing speed (default 25)
+    ad.options.speed_penup   = 60   # % — travel speed (default 75)
+    ad.options.pen_delay_up  = 150  # ms — wait after pen lifts before moving (prevents drag)
     ad.connect()
 
     ad.penup()
