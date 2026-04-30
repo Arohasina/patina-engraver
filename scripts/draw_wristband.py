@@ -46,6 +46,7 @@ Z4_X0, Z4_X1 = _F,  _DRAW # Distance     (20 %)
 
 DOT_SPACING      = 0.5   # mm between dots in Zone 1 (zigzag)
 DOT_SPACING_LINE = 2.0   # mm between dots in Zones 2 & 3 (stipple lines)
+CAL_MAX          = 3000.0 
 
 FITBIT_DIR   = Path(__file__).parent.parent / "Fitbit"
 ACTIVITY_DIR = FITBIT_DIR / "Physical Activity_GoogleData"
@@ -194,14 +195,12 @@ def draw_zone1(ad, avg_steps, avg_active_min):
 #Zone 2: Activity Calories
 
 def draw_zone2(ad, calories_per_day):
-    zone_w  = Z2_X1 - Z2_X0
-    max_cal = max((c for c in calories_per_day if c > 0), default=1.0)
-
+    zone_w = Z2_X1 - Z2_X0
     for i, cal in enumerate(calories_per_day):
         if cal <= 0:
             continue
         x = Z2_X0 + (i + 0.5) * zone_w / 7
-        line_dots(ad, x, Y_TOP, x, Y_TOP + (cal / max_cal) * (Y_BOT_Z12 - Y_TOP), DOT_SPACING_LINE)
+        line_dots(ad, x, Y_TOP, x, Y_TOP + min(cal / CAL_MAX, 1.0) * (Y_BOT_Z12 - Y_TOP), DOT_SPACING_LINE)
 
 
 #Zone 3: Time in Bed
