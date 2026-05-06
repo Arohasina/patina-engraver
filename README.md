@@ -191,6 +191,7 @@ Patterns grow more complex as activity increases:
 
 AxiDraw is developed by [Evil Mad Scientist](https://axidraw.com/).
 Python interface: [pyaxidraw](https://pypi.org/project/pyaxidraw/).
+Link to the original reseach paper:
 [Original Paper (ACM DL)](https://doi.org/10.1145/2702123.2702213)
 
 ---
