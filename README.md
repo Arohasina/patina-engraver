@@ -20,17 +20,26 @@ This project recreates that system using a Fitbit Inspire 3 and an AxiDraw V3 pl
 ---
 
 ## How It Works
-
+ 
 Activity data is exported from Fitbit, processed by a Python script, and sent directly to the AxiDraw, which draws data-driven patterns onto a painted wristband surface. Each week adds a new layer of marks, building up a physical history of your activity.
-
-The wristband (22 cm × 3.5 cm) is divided into four horizontal zones:
-
-| Zone | Size | Data |
-|------|------|------|
-| Zone 1 | 40% | Steps + Active Time |
-| Zone 2 | 20% | Calories (Mon–Sun) |
-| Zone 3 | 20% | Sleep / Time in Bed (Mon–Sun) |
-| Zone 4 | 20% | Distance |
+ 
+The wristband is 220 mm × 45 mm. The right 20 mm is hidden under the magnet clasp and never engraved, leaving 200 mm of engravable width. That space is divided into four zones separated by fixed gaps, arranged left to right:
+ 
+```
+[ Z2: Calories ] 3mm gap [ Z1: Steps/Active ] 10mm tracker hole [ Z3: Sleep ] 3mm gap [ Z4: Distance ] | 20mm clasp
+```
+ 
+| Position | Zone | Proportion | Data |
+|----------|------|-----------|------|
+| Leftmost | Zone 2 | ~15% | Calories (Mon–Sun) |
+| — | 3 mm gap | — | Separator |
+| Centre-left | Zone 1 | ~41% | Steps + Active Time |
+| — | 10 mm blank | — | Tracker module cutout |
+| Centre-right | Zone 3 | ~15% | Sleep / Time in Bed (Mon–Sun) |
+| — | 3 mm gap | — | Separator |
+| Rightmost | Zone 4 | ~20% | Total Walking Distance |
+ 
+Proportions are calculated from 90 proportional units across the 184 mm of drawable area (200 mm minus 16 mm of fixed gaps): Zone 2 = 15 units, Zone 1 = 40 units, Zone 3 = 15 units, Zone 4 = 20 units.
 
 ### Pattern Encoding
 
