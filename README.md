@@ -33,7 +33,7 @@ The wristband is 220 mm × 45 mm. The right 20 mm is hidden under the magnet cla
 |----------|------|-----------|------|
 | Leftmost | Zone 2 | ~15% | Calories (Mon–Sun) |
 | — | 3 mm gap | — | Separator |
-| Centre-left | Zone 1 | ~41% | Steps + Active Time |
+| Centre-left | Zone 1 | ~40% | Steps + Active Time |
 | — | 10 mm blank | — | Tracker module cutout |
 | Centre-right | Zone 3 | ~15% | Sleep / Time in Bed (Mon–Sun) |
 | — | 3 mm gap | — | Separator |
