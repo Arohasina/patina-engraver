@@ -46,7 +46,12 @@ Z4_X0, Z4_X1 = _F,  _DRAW # Distance     (20 %)
 
 DOT_SPACING      = 0.5   # mm between dots in Zone 1 (zigzag)
 DOT_SPACING_LINE = 2.0   # mm between dots in Zones 2 & 3 (stipple lines)
-CAL_MAX          = 3000.0 
+CAL_MAX          = 3000.0
+
+WEEK_START = "2026-04-12"  # change to switch weeks start date
+#for demo purposes week 1: 2026-04-12 to 2026-04-18
+#for demo purposes week 2: 2026-04-19 to 2026-04-25
+#for demo purposes week 3: 2026-04-26 to 2026-05-02
 
 FITBIT_DIR   = Path(__file__).parent.parent / "Fitbit"
 ACTIVITY_DIR = FITBIT_DIR / "Physical Activity_GoogleData"
@@ -135,7 +140,7 @@ def pick_week(steps):
     from all days that have step data, picks the 7 most recent days with non-zero steps. 
     If fewer than 7 exist, it pads the front with empty strings.
     """
-    dates = sorted(d for d, s in steps.items() if s > 0)[-7:]
+    dates = sorted(d for d, s in steps.items() if s > 0 and d >= WEEK_START)[-7:]
     while len(dates) < 7:
         dates.insert(0, "")
     return dates
@@ -261,7 +266,7 @@ def main():
     avg_active = sum(active_vals) // max(1, sum(1 for a in active_vals if a > 0))
     total_km   = sum(dist_vals)
 
-    print(f"Week:               {week[0] or '?'}  ->  {week[-1]}")
+    print(f"Week:               {WEEK_START}  ->  {week[-1]}")
     print(f"Avg daily steps:    {avg_steps}")
     print(f"Avg active min/day: {avg_active}")
     print(f"Total distance km:  {total_km:.2f}")
