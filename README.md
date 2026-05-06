@@ -1,7 +1,14 @@
-# patina-engraver
+# Patina Engraver
 
-**patina-engraver** is a Python toolkit for turning your daily Fitbit steps and activity logs into custom visual engravings on an AxiDraw V3 plotter.  
-It loads step counts and related activity data from exported Fitbit files, visualizes them, and controls the AxiDraw to engrave personal patterns on a wristband.
+A student reproduction of the **Patina Engraver** system, originally presented at CHI 2015:
+
+> Lee, M.-H., Cha, S., & Nam, T.-J. (2015). **Patina Engraver: Visualizing Activity Logs as Patina in Fashionable Trackers.** *Proceedings of the 33rd Annual ACM Conference on Human Factors in Computing Systems (CHI '15)*, 1173–1182. https://doi.org/10.1145/2702123.2702213
+
+The original paper by Moon-Hwan Lee, Seijin Cha, and Tek-Jin Nam (KAIST) explored how activity tracking data could be engraved as patina-like patterns onto a wristband, turning personal data into a gradually accumulating, visible, material record instead of numbers on a screen.
+
+This project recreates that system using a Fitbit Inspire 3 and an AxiDraw V3 plotter, with our own zone layout, pattern encoding logic, and wristband construction. The original paper used a custom-built piercing device (solenoid + needle); our reproduction adapts this concept using a Sharpie marker of different color for each week. 
+
+**Reproduced by Arohasina Ravoahanginiainaa &Galina Pokitko, 2026**
 
 ---
 
@@ -9,6 +16,28 @@ It loads step counts and related activity data from exported Fitbit files, visua
 
 - **Data Loader:** Processes manually exported Fitbit data (CSV, JSON).
 - **Custom Engraving:** Turns activity metrics into patterns for AxiDraw V3 to draw on the wristband.
+
+---
+
+## How It Works
+
+Activity data is exported from Fitbit, processed by a Python script, and sent directly to the AxiDraw, which draws data-driven patterns onto a painted wristband surface. Each week adds a new layer of marks, building up a physical history of your activity.
+
+The wristband (22 cm × 3.5 cm) is divided into four horizontal zones:
+
+| Zone | Size | Data |
+|------|------|------|
+| Zone 1 | 40% | Steps + Active Time |
+| Zone 2 | 20% | Calories (Mon–Sun) |
+| Zone 3 | 20% | Sleep / Time in Bed (Mon–Sun) |
+| Zone 4 | 20% | Distance |
+
+### Pattern Encoding
+
+- **Steps + Active Time** — Diagonal zigzag lines (1000 steps = 1 line). Higher active time produces smoother lines; lower activity introduces noise for a more irregular look.
+- **Calories** — One vertical line per day, scaled relative to the highest calorie day of the week.
+- **Sleep** — Similar to calories but inverted and filtered; gaps highlight irregular sleep patterns.
+- **Distance** — Total weekly distance controls pattern complexity, from simple shapes to dense branching structures.
 
 ---
 
@@ -23,7 +52,13 @@ It loads step counts and related activity data from exported Fitbit files, visua
 
 ## Installation
 
-1. **Create and activate a virtual environment:**
+1. **Clone the repo:**
+    ```bash
+    git clone https://github.com/Arohasina/patina-engraver.git
+    cd patina-engraver
+    ```
+
+2. **Create and activate a virtual environment:**
     ```bash
     python -m venv .venv
     # Windows:
@@ -31,21 +66,22 @@ It loads step counts and related activity data from exported Fitbit files, visua
     # macOS/Linux:
     source .venv/bin/activate
     ```
-2. **Install AxiDraw and other requirements:**
+
+3. **Install AxiDraw:**
     ```bash
     python -m pip install https://cdn.evilmadscientist.com/dl/ad/public/AxiDraw_API.zip
     ```
 
-3. (Optional) Install other requirements:
+4. **(Optional) Install other requirements:**
     ```bash
     pip install -r requirements.txt
     ```
-    
+
 ---
 
-## Preparing your Fitbit data
+## Preparing Your Fitbit Data
 
-1. Download your latest Fitbit/Google data export and extract it on your system.
+1. Download your latest Fitbit data from Google data export and extract it on your system.
 2. **Replace the entire `Fitbit` folder in this repository with the new one from your export.**
     - The folder structure and contents must match the new export.
     - Example:
@@ -56,37 +92,39 @@ It loads step counts and related activity data from exported Fitbit files, visua
           Global Export Data/
           ... (other Fitbit data subfolders)
       ```
-3. No need to manually copy individual files; always replace the full `Fitbit` directory to ensure all data is up to date.
+3. No need to manually copy individual files. Always replace the full `Fitbit` directory to ensure all data is up to date.
 
 ---
 
 ## Usage
 
-**1. Load and preview your steps data to test if data is being loaded correctly**
+**1. Load and preview your steps data**
+
+Test that your data is being loaded correctly:
 ```bash
 python scripts/load_steps.py
 ```
 Shows a summary (`date` / `steps per day`) from your Fitbit export.
 
 **2. Test your AxiDraw connection**
-Connect your AxiDraw via USB cable to your laptop and power it on with the charger. 
 
+Connect your AxiDraw via USB cable to your laptop and power it on with the charger:
 ```bash
 python scripts/draw_triangle.py
 ```
-Draws a simple triangle to test if the axidraw is successfully connected to your laptop.
+Draws a simple triangle to confirm the AxiDraw is successfully connected.
 
-**3. Draw wristband outline**
+**3. Draw the wristband outline**
 ```bash
 python scripts/draw_outline.py
 ```
 Draws a reference outline for the intended engraving area and tracker cutout.
 
-**4. Engrave your Patina Wristband!**
+**4. Engrave your Patina Wristband**
 ```bash
 python scripts/draw_wristband.py
 ```
-This script translates the past week's health data into unique patterns and engraves them on the wristband. You can manually input the start week with:
+Translates the past week's health data into unique patterns and engraves them onto the wristband. You can manually set the start of the week with:
 ```python
 WEEK_START = "YYYY-MM-DD"
 ```
@@ -99,36 +137,59 @@ WEEK_START = "YYYY-MM-DD"
 scripts/
     draw_outline.py     # Draws band outline, serves as setup
     draw_triangle.py    # Basic test pattern for hardware check
-    draw_wristband.py   # Engraves visual patterns from Fitbit
-    load_steps.py       # Displays summary of your steps for testing data loading.
+    draw_wristband.py   # Engraves visual patterns from Fitbit data
+    load_steps.py       # Displays summary of steps for testing data loading
 Fitbit/
     Physical Activity_GoogleData/   # Place steps_*.csv here (from export)
     Global Export Data/             # Place relevant JSON here (from export)
-requirements.txt      # (optional) for dependency tracking
-README.md            
+requirements.txt
+README.md
 ```
 
 ---
 
-## How it works
+## Physical Setup
 
-- Parses your CSV/JSON data for the past week.
-- Maps health metrics (steps, calories, sleep, distance, etc.) to positions, lines, or fractal marks on the wristband.
-- Controls AxiDraw to engrave physical patterns unique to your data.
+### Wristband Construction
+
+- **Layer 1** — Silicone base
+- **Layer 2** — PVC layer
+- **Layer 3** — White painted surface (for visibility)
+
+A modular pouch holds the Fitbit tracker, secured with magnets on both sides and reinforced with staples. A support pad keeps the wristband flat and stable during engraving.
+
+### Patina Coloring
+
+Before engraving, yellow, orange, and blue Sharpie are applied across the surface to mimic the natural variation of patina on copper. A fine-point Sharpie is then used in the AxiDraw pen holder for engraving.
+
+### Weekly Results
+
+Patterns grow more complex as activity increases:
+- **Low activity week** → sparse, simpler patterns
+- **Moderate activity week** → more defined, varied marks
+- **High activity week** → dense, complex patterns across all zones
 
 ---
 
-## License
+## Links
 
-[MIT](LICENSE) (or your actual license here)
+- [Project Site](https://sites.google.com/view/patinaengraver)
+- [Sprint Documentation](https://docs.google.com/document/d/1jsipCbgLdka5UFTaC-yq6kGwP3_bZ4m0GXoSer6dye8/edit?usp=sharing)
 
 ---
 
 ## Credits
 
-AxiDraw is developed by [Evil Mad Scientist](https://axidraw.com/).  
+AxiDraw is developed by [Evil Mad Scientist](https://axidraw.com/).
 Python interface: [pyaxidraw](https://pypi.org/project/pyaxidraw/).
+[Original Paper (ACM DL)](https://doi.org/10.1145/2702123.2702213)
 
 ---
 
-**Contributions and suggestions welcome!**  
+## License
+
+[MIT](LICENSE)
+
+---
+
+**Contributions and suggestions welcome!**
